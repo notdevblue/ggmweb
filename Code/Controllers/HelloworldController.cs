@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using GGM.Application.Models;
 using GGM.Foundation;
+using GGM.Application.Protocol;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace GGM.Application.Controllers;
 
@@ -24,17 +27,23 @@ public class HelloworldController : Controller
     public IActionResult Hello(string name)
     {
         var reqName = name;
-        var res = new Helloworld()
+
+        var res = new ResHelloworld_Hello()
         {
             Name = reqName,
             ServerTime = TimeHelper.GetServerTime(),
             Message = $"Hello {reqName}!",
         };
 
-        _logger.LogInformation($"Hello()");
+        _logger.LogInformation($"Hello({res.Message})");
 
-        return new JsonResult(res);
+        return new JsonResult(res, _serializerOptions);
     }
 
     private ILogger<HelloworldController> _logger;
+    private static JsonSerializerOptions _serializerOptions = new JsonSerializerOptions()
+    {
+        PropertyNamingPolicy = null,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
 }
